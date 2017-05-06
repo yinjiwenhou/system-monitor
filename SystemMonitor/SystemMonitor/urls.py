@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from SystemMonitor.view import cpu_info
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^info/$', cpu_info, name='info'),
 ]
