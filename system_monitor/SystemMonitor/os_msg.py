@@ -3,6 +3,7 @@
 
 import os
 import commands
+from datetime import timedelta
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -100,3 +101,54 @@ def get_mem_usage():
         logging.error("get MemTotal error")
 
     return (1 - float(output_free) / float(output_total)) * 100
+
+def get_mem():
+    try:
+        pipe = os.popen("free -tmo | grep Mem | awk '{print $2,$4,$6,$7}'")
+        data = pipe.read().strip().split()
+        pipe.close()
+
+        allmem = int(data[0])
+        freemem = int(data[1])
+        buffers = int(data[2])
+        cachedmem = int(data[3])
+
+        freemem += buffers + cachedmem
+        percent = (100 - ((freemem * 100) / allmem))
+        usage = (allmem - freemem)
+
+        mem_usage = {'usage':usage, 'buffers':buffers, 'cached':cachedmem, 'free':freemem, 'percent':percent}
+        data = mem_usage
+    except Exception as err:
+        data = str(err)
+
+    return data
+
+def get_uptime():
+    try:
+        pipe = os.popen("cat /proc/uptime | awk '{print $1}'")
+        ouput = pipe.read()
+        pipe.close()
+
+        uptime_seconds = float(ouput)
+        uptime_time = str(timedelta(seconds=uptime_seconds))
+        data = uptime_time.split('.', 1)[0]
+    except Exception as err:
+        data = str(err)
+
+    return data
+
+print get_uptime()
+
+
+def get_os_process():
+    cmd = 'ps -ef'
+    status, output = commands.getstatusoutput(cmd)
+    if status != 0:
+        logging.error("get os process error")
+
+    output = output.split('\n')[1:]
+    
+    return output
+
+

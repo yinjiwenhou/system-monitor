@@ -16,8 +16,12 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from SystemMonitor.view import cpu_info
+from SystemMonitor.view import mem_info
+from view import os_process
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^info/$', cpu_info, name='info'),
+    url(r'^mem/$', mem_info, name='mem'),
+    url(r'^process/$', os_process, name='process'),
 ]
